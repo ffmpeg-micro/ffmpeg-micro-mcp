@@ -3,7 +3,7 @@
   "name": "com.ffmpeg-micro/mcp-server",
   "description": "MCP server for the FFmpeg Micro video transcoding API — create, monitor, download transcodes.",
   "repository": {
-    "url": "https://github.com/javidjamae/ffmpeg-micro-mcp",
+    "url": "https://github.com/ffmpeg-micro/ffmpeg-micro-mcp",
     "source": "github",
     "id": "1208250823"
   },
