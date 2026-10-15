@@ -1,7 +1,7 @@
 # @ffmpeg-micro/mcp-server
 
 [![npm version](https://img.shields.io/npm/v/@ffmpeg-micro/mcp-server.svg)](https://www.npmjs.com/package/@ffmpeg-micro/mcp-server)
-[![CI](https://github.com/javidjamae/ffmpeg-micro-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/javidjamae/ffmpeg-micro-mcp/actions/workflows/ci.yml)
+[![CI](https://github.com/ffmpeg-micro/ffmpeg-micro-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/ffmpeg-micro/ffmpeg-micro-mcp/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 A [Model Context Protocol](https://modelcontextprotocol.io) server that lets AI agents — Claude Code, Claude Desktop, Cursor, Windsurf, VS Code, and any other MCP-compatible client — create, monitor, and download video transcodes through the [FFmpeg Micro](https://ffmpeg-micro.com) REST API.
@@ -140,7 +140,7 @@ Once connected, you can ask things like:
 ## Development
 
 ```bash
-git clone https://github.com/javidjamae/ffmpeg-micro-mcp.git
+git clone https://github.com/ffmpeg-micro/ffmpeg-micro-mcp.git
 cd ffmpeg-micro-mcp
 ./scripts/setup.sh
 ```

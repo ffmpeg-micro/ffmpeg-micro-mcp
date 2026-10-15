@@ -30,12 +30,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/javidjamae/ffmpeg-micro-mcp.git"
+    "url": "git+https://github.com/ffmpeg-micro/ffmpeg-micro-mcp.git"
   },
   "bugs": {
-    "url": "https://github.com/javidjamae/ffmpeg-micro-mcp/issues"
+    "url": "https://github.com/ffmpeg-micro/ffmpeg-micro-mcp/issues"
   },
-  "homepage": "https://github.com/javidjamae/ffmpeg-micro-mcp#readme",
+  "homepage": "https://github.com/ffmpeg-micro/ffmpeg-micro-mcp#readme",
   "license": "MIT",
   "author": "Javid Jamae",
   "keywords": [
