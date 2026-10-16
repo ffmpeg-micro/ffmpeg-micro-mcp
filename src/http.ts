@@ -1,16 +1,6 @@
 import express from "express";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import { FFmpegMicroClient } from "./client.js";
 import { buildMcpServer } from "./mcpServer.js";
-
-function createMcpServer(apiKey: string): McpServer {
-  const client = new FFmpegMicroClient({
-    apiKey,
-    baseUrl: process.env.FFMPEG_MICRO_API_URL,
-  });
-  return buildMcpServer(client);
-}
 
 /**
  * Creates the Express application for the HTTP MCP server.
@@ -138,7 +128,7 @@ export function createApp(): express.Express {
       return;
     }
 
-    const server = createMcpServer(token);
+    const server = buildMcpServer({ apiKey: token, baseUrl: process.env.FFMPEG_MICRO_API_URL });
     // sessionIdGenerator: undefined → stateless mode (no session headers, no
     // server-side state). Required for serverless/Vercel deployments where
     // there is no persistent process to hold session state.

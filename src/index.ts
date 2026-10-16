@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { FFmpegMicroClient } from "./client.js";
 import { buildMcpServer } from "./mcpServer.js";
 
 function readEnv(name: string): string | undefined {
@@ -21,12 +20,7 @@ function createServer(): McpServer {
     process.exit(1);
   }
 
-  const client = new FFmpegMicroClient({
-    apiKey,
-    baseUrl: readEnv("FFMPEG_MICRO_API_URL"),
-  });
-
-  return buildMcpServer(client);
+  return buildMcpServer({ apiKey, baseUrl: readEnv("FFMPEG_MICRO_API_URL") });
 }
 
 async function main(): Promise<void> {

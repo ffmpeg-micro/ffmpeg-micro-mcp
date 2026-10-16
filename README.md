@@ -258,7 +258,7 @@ You don't manually cut releases. The pipeline does it:
 
 ### Version-sync guard
 
-`.github/workflows/release.yml` still runs a version-parity check on every push to `main`. If `package.json.version`, `server.json.version`, `server.json.packages[0].version`, and `SERVER_VERSION` in `src/version.ts` ever drift, the build fails loudly. `tests/version.test.ts` also checks that both the stdio and hosted servers report that version in their `initialize` response. Normally `scripts/sync-server-version.mjs` keeps them aligned, but the guard catches manual edits that missed the sync.
+`.github/workflows/release.yml` still runs a version-parity check on every push to `main`. If `package.json.version`, `server.json.version`, and `server.json.packages[0].version` ever drift, the build fails loudly. `SERVER_VERSION` in `src/version.ts` is covered by `tests/version.test.ts`, which checks the version reported in a real `initialize` response from the shared server builder (`src/mcpServer.ts`, used by both entry points) and from the hosted HTTP app. Normally `scripts/sync-server-version.mjs` keeps them aligned, but the guard catches manual edits that missed the sync.
 
 ### Verify
 
@@ -314,7 +314,7 @@ After merge, the Version Packages PR either opens or updates itself to include y
 ### Troubleshooting
 
 - **`Require changeset` check fails on my PR** — run `npx changeset` and commit the generated file. For docs-only / CI-only PRs, add the `no-changeset` label or `npx changeset --empty`.
-- **CI fails at the version-sync guard step** — `server.json` or `src/version.ts` was edited manually. Locally: `node scripts/sync-server-version.mjs`, commit, push. The guard compares `package.json.version`, `server.json.version`, `server.json.packages[0].version`, and `src/version.ts`.
+- **CI fails at the version-sync guard step** — `server.json` was edited manually. Locally: `node scripts/sync-server-version.mjs`, commit, push. The guard compares `package.json.version`, `server.json.version`, and `server.json.packages[0].version`. If `tests/version.test.ts` fails instead, `src/version.ts` drifted: the same `node scripts/sync-server-version.mjs` fixes it.
 - **`changesets/action` didn't open a Version Packages PR after my feature PR merged** — check that your PR's `.changeset/*.md` file actually had content (non-empty front matter with a bump type and summary). Empty changesets signal "no release needed" and are intentionally ignored.
 - **`mcp-publisher publish` fails with "package not found"** — npm hasn't finished propagating the new version yet. The release workflow's `Determine if MCP Registry publish is needed` step retries `npm view` for up to ~50 seconds and backs off if the version still isn't live, deferring the registry publish to the next push to main (which self-heals the drift). If you see this in a manual run, just wait 30s and re-publish.
 - **MCP Registry stuck a version behind npm** — the `Determine if MCP Registry publish is needed` step skipped (or returned `needed=false`). Push any commit to main to trigger a re-run; the gate compares `package.json` ↔ npm ↔ registry and catches up automatically. If it keeps skipping, check the step's log output for which version each source reported.

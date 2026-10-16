@@ -20,11 +20,17 @@ import { SERVER_VERSION } from "./version.js";
 export const SERVER_NAME = "ffmpeg-micro-mcp";
 
 /**
- * Builds the MCP server with every tool registered. Both entry points (stdio in
- * index.ts, hosted HTTP in http.ts) use this, so they cannot drift apart in
- * name, version or tool list.
+ * Builds the API client and the MCP server with every tool registered. Both
+ * entry points (stdio in index.ts, hosted HTTP in http.ts) use this, so they
+ * cannot drift apart in name, version, client setup or tool list.
  */
-export function buildMcpServer(client: FFmpegMicroClient): McpServer {
+export interface BuildMcpServerOptions {
+  apiKey: string;
+  baseUrl?: string;
+}
+
+export function buildMcpServer({ apiKey, baseUrl }: BuildMcpServerOptions): McpServer {
+  const client = new FFmpegMicroClient({ apiKey, baseUrl });
   const server = new McpServer({ name: SERVER_NAME, version: SERVER_VERSION });
 
   registerTranscodeVideo(server, client);

@@ -60,17 +60,17 @@ jobs:
 
       - run: npm test
 
-      # Defence-in-depth: fail loudly if package.json, server.json and
-      # src/version.ts have drifted apart for any reason. The ci:version script
-      # keeps them in sync, but this catches manual edits that missed the sync.
-      - name: Check server.json and src/version.ts match package.json
+      # Defence-in-depth: fail loudly if package.json and server.json have drifted
+      # apart for any reason. The ci:version script keeps them in sync, but this
+      # catches manual edits that missed the sync. (src/version.ts is covered by
+      # tests/version.test.ts in the npm test step above.)
+      - name: Check server.json version matches package.json
         run: |
           PKG_VERSION=$(node -p "require('./package.json').version")
           SRV_VERSION=$(node -p "require('./server.json').version")
           PKG_NPM_VERSION=$(node -p "require('./server.json').packages[0].version")
-          SRC_VERSION=$(node -p "/SERVER_VERSION = \"([^\"]*)\"/.exec(require('fs').readFileSync('src/version.ts','utf8'))?.[1]")
-          if [ "$PKG_VERSION" != "$SRV_VERSION" ] || [ "$PKG_VERSION" != "$PKG_NPM_VERSION" ] || [ "$PKG_VERSION" != "$SRC_VERSION" ]; then
-            echo "Version mismatch: package.json=$PKG_VERSION server.json.version=$SRV_VERSION server.json.packages[0].version=$PKG_NPM_VERSION src/version.ts=$SRC_VERSION"
+          if [ "$PKG_VERSION" != "$SRV_VERSION" ] || [ "$PKG_VERSION" != "$PKG_NPM_VERSION" ]; then
+            echo "Version mismatch: package.json=$PKG_VERSION server.json.version=$SRV_VERSION server.json.packages[0].version=$PKG_NPM_VERSION"
             exit 1
           fi
 
