@@ -1,51 +1,6 @@
 import express from "express";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import { FFmpegMicroClient } from "./client.js";
-import { registerTranscodeVideo } from "./tools/transcodeVideo.js";
-import { registerGetTranscode } from "./tools/getTranscode.js";
-import { registerListTranscodes } from "./tools/listTranscodes.js";
-import { registerCancelTranscode } from "./tools/cancelTranscode.js";
-import { registerGetDownloadUrl } from "./tools/getDownloadUrl.js";
-import { registerTranscodeAndWait } from "./tools/transcodeAndWait.js";
-import { registerTranscribeAudio } from "./tools/transcribeAudio.js";
-import { registerGetTranscribe } from "./tools/getTranscribe.js";
-import { registerGetTranscribeDownload } from "./tools/getTranscribeDownload.js";
-import { registerRequestUploadUrl } from "./tools/requestUploadUrl.js";
-import { registerConfirmUpload } from "./tools/confirmUpload.js";
-import { registerRunBlueprint } from "./tools/runBlueprint.js";
-import { registerGetBlueprintRun } from "./tools/getBlueprintRun.js";
-import { registerRunBlueprintAndWait } from "./tools/runBlueprintAndWait.js";
-import { registerContinueBlueprintRun } from "./tools/continueBlueprintRun.js";
-
-const SERVER_NAME = "ffmpeg-micro-mcp";
-const SERVER_VERSION = "0.1.0";
-
-function createMcpServer(apiKey: string): McpServer {
-  const client = new FFmpegMicroClient({
-    apiKey,
-    baseUrl: process.env.FFMPEG_MICRO_API_URL,
-  });
-
-  const server = new McpServer({ name: SERVER_NAME, version: SERVER_VERSION });
-  registerTranscodeVideo(server, client);
-  registerGetTranscode(server, client);
-  registerListTranscodes(server, client);
-  registerCancelTranscode(server, client);
-  registerGetDownloadUrl(server, client);
-  registerTranscodeAndWait(server, client);
-  registerTranscribeAudio(server, client);
-  registerGetTranscribe(server, client);
-  registerGetTranscribeDownload(server, client);
-  registerRequestUploadUrl(server, client);
-  registerConfirmUpload(server, client);
-  registerRunBlueprint(server, client);
-  registerGetBlueprintRun(server, client);
-  registerRunBlueprintAndWait(server, client);
-  registerContinueBlueprintRun(server, client);
-
-  return server;
-}
+import { buildMcpServer } from "./mcpServer.js";
 
 /**
  * Creates the Express application for the HTTP MCP server.
@@ -173,7 +128,7 @@ export function createApp(): express.Express {
       return;
     }
 
-    const server = createMcpServer(token);
+    const server = buildMcpServer({ apiKey: token, baseUrl: process.env.FFMPEG_MICRO_API_URL });
     // sessionIdGenerator: undefined → stateless mode (no session headers, no
     // server-side state). Required for serverless/Vercel deployments where
     // there is no persistent process to hold session state.
