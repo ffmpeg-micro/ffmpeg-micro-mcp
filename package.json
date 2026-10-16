@@ -16,7 +16,7 @@
     "build": "tsc",
     "version": "node scripts/sync-server-version.mjs && git add server.json src/version.ts",
     "ci:version": "changeset version && node scripts/sync-server-version.mjs",
-    "ci:publish": "npm publish",
+    "ci:publish": "changeset publish",
     "prepublishOnly": "npm run build",
     "test": "vitest run --exclude 'tests/integration/**'",
     "test:watch": "vitest --exclude 'tests/integration/**'",
