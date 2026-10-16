@@ -81,7 +81,10 @@ jobs:
           # ci:version runs `changeset version` then mirrors the new version
           # into server.json and src/version.ts via scripts/sync-server-version.mjs.
           version: npm run ci:version
-          # ci:publish runs `npm publish` (OIDC trusted publishing). The MCP
+          # ci:publish runs `changeset publish`, which publishes through npm
+          # (OIDC trusted publishing) only when package.json's version is not
+          # on npm yet. A bare `npm publish` failed every non-release push to
+          # main, so the registry catch-up below never got to run. The MCP
           # Registry publish is a separate step below so the DNS private key
           # stays visible in workflow config.
           publish: npm run ci:publish

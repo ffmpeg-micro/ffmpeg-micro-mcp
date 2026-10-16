@@ -252,7 +252,7 @@ You don't manually cut releases. The pipeline does it:
    - Commits the result to its own branch
 3. **Review and merge** the Version Packages PR when you're ready to ship. You can let several changesets accumulate before merging — the PR updates itself as more land on `main`.
 4. On merge, the release workflow runs again. This time there are no pending changesets, so `changesets/action` detects the version bump and:
-   - `npm publish` (OIDC trusted publishing, with provenance attestation)
+   - `changeset publish`, which runs `npm publish` (OIDC trusted publishing, with provenance attestation) only if that version isn't on npm yet, so every other push to `main` passes this step
    - Creates the GitHub Release + git tag automatically
 5. The workflow's final steps install `mcp-publisher`, authenticate via the DNS private key, and publish to the MCP Registry as `com.ffmpeg-micro/mcp-server`.
 
