@@ -247,7 +247,7 @@ You don't manually cut releases. The pipeline does it:
 2. **`.github/workflows/release.yml`** runs on every push to `main`. When pending changesets exist, it opens (or updates) a `chore(release): version packages` PR authored by the action. That PR:
    - Runs `changeset version` to consume the pending changesets
    - Bumps `package.json`
-   - Re-syncs `server.json` via `scripts/sync-server-version.mjs`
+   - Re-syncs `server.json` and `src/version.ts` via `scripts/sync-server-version.mjs`
    - Appends entries to `CHANGELOG.md`
    - Commits the result to its own branch
 3. **Review and merge** the Version Packages PR when you're ready to ship. You can let several changesets accumulate before merging — the PR updates itself as more land on `main`.
@@ -258,7 +258,7 @@ You don't manually cut releases. The pipeline does it:
 
 ### Version-sync guard
 
-`.github/workflows/release.yml` still runs a version-parity check on every push to `main`. If `package.json.version`, `server.json.version`, and `server.json.packages[0].version` ever drift, the build fails loudly. Normally `scripts/sync-server-version.mjs` keeps them aligned, but the guard catches manual edits that missed the sync.
+`.github/workflows/release.yml` still runs a version-parity check on every push to `main`. If `package.json.version`, `server.json.version`, `server.json.packages[0].version`, and `SERVER_VERSION` in `src/version.ts` ever drift, the build fails loudly. `tests/version.test.ts` also checks that both the stdio and hosted servers report that version in their `initialize` response. Normally `scripts/sync-server-version.mjs` keeps them aligned, but the guard catches manual edits that missed the sync.
 
 ### Verify
 
@@ -297,7 +297,7 @@ After merge, the Version Packages PR either opens or updates itself to include y
 
 ### Rules
 
-- **Never edit version fields in `server.json` or `package.json` by hand.** Changesets owns both — `scripts/sync-server-version.mjs` mirrors `package.json` into `server.json`. The CI drift guard fails the release if they diverge.
+- **Never edit version fields in `server.json`, `package.json` or `src/version.ts` by hand.** Changesets owns them — `scripts/sync-server-version.mjs` mirrors `package.json` into `server.json` and `src/version.ts`. The CI drift guard fails the release if they diverge.
 - **Never `git tag` a release manually.** `changesets/action` creates the tag + GitHub Release as part of publish. Manual tags aren't picked up by the new workflow.
 - **Never bypass the Require-changeset check** by committing changes to `.changeset/config.json` or `.changeset/README.md` (those don't count). Use `npx changeset`, the `no-changeset` label, or `npx changeset --empty`.
 
@@ -307,14 +307,14 @@ After merge, the Version Packages PR either opens or updates itself to include y
 - `server.json` — MCP Registry metadata. Version fields are auto-synced from `package.json`.
 - `.changeset/config.json` — Changesets configuration (public access, GitHub-aware changelog formatter).
 - `.changeset/*.md` — pending release notes waiting to be consumed by the next `changeset version` run.
-- `scripts/sync-server-version.mjs` — mirrors `package.json` version into `server.json`.
+- `scripts/sync-server-version.mjs` — mirrors `package.json` version into `server.json` and `src/version.ts` (the version the server reports in `initialize`).
 - `.github/workflows/release.yml` — the publish pipeline (changesets/action + MCP Registry step).
 - `.github/workflows/require-changeset.yml` — enforces changeset presence on PRs.
 
 ### Troubleshooting
 
 - **`Require changeset` check fails on my PR** — run `npx changeset` and commit the generated file. For docs-only / CI-only PRs, add the `no-changeset` label or `npx changeset --empty`.
-- **CI fails at the version-sync guard step** — `server.json` was edited manually. Locally: `node scripts/sync-server-version.mjs`, commit, push. The guard compares `package.json.version`, `server.json.version`, and `server.json.packages[0].version`.
+- **CI fails at the version-sync guard step** — `server.json` or `src/version.ts` was edited manually. Locally: `node scripts/sync-server-version.mjs`, commit, push. The guard compares `package.json.version`, `server.json.version`, `server.json.packages[0].version`, and `src/version.ts`.
 - **`changesets/action` didn't open a Version Packages PR after my feature PR merged** — check that your PR's `.changeset/*.md` file actually had content (non-empty front matter with a bump type and summary). Empty changesets signal "no release needed" and are intentionally ignored.
 - **`mcp-publisher publish` fails with "package not found"** — npm hasn't finished propagating the new version yet. The release workflow's `Determine if MCP Registry publish is needed` step retries `npm view` for up to ~50 seconds and backs off if the version still isn't live, deferring the registry publish to the next push to main (which self-heals the drift). If you see this in a manual run, just wait 30s and re-publish.
 - **MCP Registry stuck a version behind npm** — the `Determine if MCP Registry publish is needed` step skipped (or returned `needed=false`). Push any commit to main to trigger a re-run; the gate compares `package.json` ↔ npm ↔ registry and catches up automatically. If it keeps skipping, check the step's log output for which version each source reported.

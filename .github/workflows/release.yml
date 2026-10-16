@@ -6,7 +6,7 @@ name: Release
 #      the bump (major/minor/patch + summary).
 #   2. This workflow runs on every push to main. If pending changesets exist,
 #      changesets/action opens (or updates) a "Version Packages" PR that bumps
-#      package.json, re-syncs server.json via scripts/sync-server-version.mjs,
+#      package.json, re-syncs server.json and src/version.ts via scripts/sync-server-version.mjs,
 #      and appends the changelog entries.
 #   3. Merging that PR drops the version bump onto main. This workflow runs
 #      again, sees no pending changesets, and publishes: npm + MCP Registry.
@@ -60,16 +60,17 @@ jobs:
 
       - run: npm test
 
-      # Defence-in-depth: fail loudly if package.json and server.json have drifted
-      # apart for any reason. The ci:version script keeps them in sync, but this
-      # catches manual edits that missed the sync.
-      - name: Check server.json version matches package.json
+      # Defence-in-depth: fail loudly if package.json, server.json and
+      # src/version.ts have drifted apart for any reason. The ci:version script
+      # keeps them in sync, but this catches manual edits that missed the sync.
+      - name: Check server.json and src/version.ts match package.json
         run: |
           PKG_VERSION=$(node -p "require('./package.json').version")
           SRV_VERSION=$(node -p "require('./server.json').version")
           PKG_NPM_VERSION=$(node -p "require('./server.json').packages[0].version")
-          if [ "$PKG_VERSION" != "$SRV_VERSION" ] || [ "$PKG_VERSION" != "$PKG_NPM_VERSION" ]; then
-            echo "Version mismatch: package.json=$PKG_VERSION server.json.version=$SRV_VERSION server.json.packages[0].version=$PKG_NPM_VERSION"
+          SRC_VERSION=$(node -p "/SERVER_VERSION = \"([^\"]*)\"/.exec(require('fs').readFileSync('src/version.ts','utf8'))?.[1]")
+          if [ "$PKG_VERSION" != "$SRV_VERSION" ] || [ "$PKG_VERSION" != "$PKG_NPM_VERSION" ] || [ "$PKG_VERSION" != "$SRC_VERSION" ]; then
+            echo "Version mismatch: package.json=$PKG_VERSION server.json.version=$SRV_VERSION server.json.packages[0].version=$PKG_NPM_VERSION src/version.ts=$SRC_VERSION"
             exit 1
           fi
 
@@ -78,7 +79,7 @@ jobs:
         uses: changesets/action@v1
         with:
           # ci:version runs `changeset version` then mirrors the new version
-          # into server.json via scripts/sync-server-version.mjs.
+          # into server.json and src/version.ts via scripts/sync-server-version.mjs.
           version: npm run ci:version
           # ci:publish runs `npm publish` (OIDC trusted publishing). The MCP
           # Registry publish is a separate step below so the DNS private key
