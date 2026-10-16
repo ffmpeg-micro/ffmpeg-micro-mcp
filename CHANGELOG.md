@@ -1,5 +1,13 @@
 # @ffmpeg-micro/mcp-server
 
+## 0.4.3
+
+### Patch Changes
+
+- [#29](https://github.com/ffmpeg-micro/ffmpeg-micro-mcp/pull/29) [`1fdfaf2`](https://github.com/ffmpeg-micro/ffmpeg-micro-mcp/commit/1fdfaf2311743f68527684e46863dd5ea603729f) Thanks [@javidjamae](https://github.com/javidjamae)! - Repository links now point to [ffmpeg-micro/ffmpeg-micro-mcp](https://github.com/ffmpeg-micro/ffmpeg-micro-mcp). The repo moved from `javidjamae/ffmpeg-micro-mcp`; old links redirect. No behavior changes.
+
+- [#29](https://github.com/ffmpeg-micro/ffmpeg-micro-mcp/pull/29) [`615412d`](https://github.com/ffmpeg-micro/ffmpeg-micro-mcp/commit/615412d673bb0d5fc9a2bff794b5ba874d73e4ea) Thanks [@javidjamae](https://github.com/javidjamae)! - The server now reports its package version in the MCP `initialize` response. Every release so far said `0.1.0`, in the npm package and on the hosted server at mcp.ffmpeg-micro.com. The hosted server deploys from `main`, so between a merge and the next release it reports the last released version.
+
 ## 0.4.2
 
 ### Patch Changes
