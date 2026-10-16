@@ -17,9 +17,9 @@ import { registerRunBlueprint } from "./tools/runBlueprint.js";
 import { registerGetBlueprintRun } from "./tools/getBlueprintRun.js";
 import { registerRunBlueprintAndWait } from "./tools/runBlueprintAndWait.js";
 import { registerContinueBlueprintRun } from "./tools/continueBlueprintRun.js";
+import { SERVER_VERSION } from "./version.js";
 
 const SERVER_NAME = "ffmpeg-micro-mcp";
-const SERVER_VERSION = "0.1.0";
 
 function createMcpServer(apiKey: string): McpServer {
   const client = new FFmpegMicroClient({

@@ -17,11 +17,9 @@ import { registerRunBlueprint } from "./tools/runBlueprint.js";
 import { registerGetBlueprintRun } from "./tools/getBlueprintRun.js";
 import { registerRunBlueprintAndWait } from "./tools/runBlueprintAndWait.js";
 import { registerContinueBlueprintRun } from "./tools/continueBlueprintRun.js";
+import { SERVER_VERSION } from "./version.js";
 
-// Loaded from the generated package.json at build time via tsc. This matches
-// the published version so MCP clients can report the server version.
 const SERVER_NAME = "ffmpeg-micro-mcp";
-const SERVER_VERSION = "0.1.0";
 
 function readEnv(name: string): string | undefined {
   const value = process.env[name];
